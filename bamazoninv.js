@@ -29,7 +29,7 @@ conn.query('SELECT id, name, price FROM Inventory', function (err, result) {
 
     //creates a table for the information from the mysql database to be placed
     var table = new Table({
-        head: ['Item Id#', 'Product Name', 'price'],
+        head: ['Item Id#', 'name', 'price'],
         style: {
             head: ['red'],
             compact: false,
@@ -95,7 +95,7 @@ var purchase = function () {
                 var saleTotal = res[0].price * productPurchased[0].quantity;
 
                 //connect to the mysql database Departments and updates the saleTotal for the id of the item purchased
-                conn.query("UPDATE Departments SET TotalSales = ? WHERE DepartmentName = ?;", [saleTotal, res[0].DepartmentName], function (err, resultOne) {
+                conn.query("UPDATE inventory SET TotalSales = ? WHERE DepartmentName = ?;", [saleTotal, res[0].DepartmentName], function (err, resultOne) {
                     if (err) console.log('error: ' + err);
                     return resultOne;
                 })
