@@ -4,6 +4,8 @@
   "description": "My Sql App Store",
   "main": "bamazon.js",
   "dependencies": {
+    "axios": "^0.18.0",
+    "create-react-app": "^1.5.2",
     "inquirer": "^5.2.0",
     "mysql2": "^1.5.3"
   },
