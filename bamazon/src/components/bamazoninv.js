@@ -1,5 +1,5 @@
 // JavaScript source code
-const mysql = require('mysql2');
+var mysql = require('mysql');
 var prompt = require('prompt');
 var colors = require('colors/safe');
 var Table = require('cli-table');
@@ -15,23 +15,21 @@ var config =
         ssl: true
     };
 
-const conn = new mysql.createConnection(config);
-
 
 
 var productPurchased = [];
 
-
+connection.connect();
 
 //connect to the mysql database and pull the information from the Inventory database to display to the user
-conn.query('SELECT id, name, price FROM Inventory', function (err, result) {
+connection.query('SELECT id, name, price FROM Inventory', function (err, result) {
     if (err) console.log(err);
 
     //creates a table for the information from the mysql database to be placed
     var table = new Table({
         head: ['Item Id#', 'Product Name', 'price'],
         style: {
-            head: ['red'],
+            head: ['blue'],
             compact: false,
             colAligns: ['center'],
         }
@@ -54,8 +52,8 @@ var purchase = function () {
     //creates the questions that will be prompted to the user
     var productInfo = {
         properties: {
-            id: { description: colors.red('Please enter the ID # of the item you wish to purchase!') },
-            quantity: { description: colors.green('How many items would you like to purchase?') }
+            id: { description: colors.blue('Please enter the ID # of the item you wish to purchase!') },
+            Quantity: { description: colors.green('How many items would you like to purchase?') }
         },
     };
 
@@ -67,35 +65,35 @@ var purchase = function () {
         //places these responses in the variable custPurchase
         var custPurchase = {
             id: res.id,
-            quantity: res.quantity
+            Quantity: res.Quantity
         };
 
         //the variable established above is pushed to the productPurchased array defined at the top of the page
         productPurchased.push(custPurchase);
 
         //connects to the mysql database and selects the item the user selected above based on the item id number entered
-        conn.query('SELECT * FROM Inventory WHERE id=?', productPurchased[0].id, function (err, res) {
+        connection.query('SELECT * FROM Inventory WHERE id=?', productPurchased[0].id, function (err, res) {
             if (err) console.log(err, 'That item ID doesn\'t exist');
 
             //if the stock quantity available is less than the amount that the user wanted to purchase then the user will be alerted that the product is out of stock
-            if (res[0].quantity < productPurchased[0].quantity) {
+            if (res[0].StockQuantity < productPurchased[0].Quantity) {
                 console.log('That product is out of stock!');
-                conn.end();
+                connection.end();
 
                 //otherwise if the stock amount available is more than or equal to the amount being asked for then the purchase is continued and the user is alerted of what items are being purchased, how much one item is and what the total amount is
-            } else if (res[0].quantity >= productPurchased[0].quantity) {
+            } else if (res[0].StockQuantity >= productPurchased[0].Quantity) {
 
                 console.log('');
 
-                console.log(productPurchased[0].quantity + ' items purchased');
+                console.log(productPurchased[0].Quantity + ' items purchased');
 
                 console.log(res[0].name + ' ' + res[0].price);
 
                 //this creates the variable SaleTotal that contains the total amount the user is paying for this total puchase
-                var saleTotal = res[0].price * productPurchased[0].quantity;
+                var saleTotal = res[0].price * productPurchased[0].Quantity;
 
                 //connect to the mysql database Departments and updates the saleTotal for the id of the item purchased
-                conn.query("UPDATE Departments SET TotalSales = ? WHERE DepartmentName = ?;", [saleTotal, res[0].DepartmentName], function (err, resultOne) {
+                connection.query("UPDATE Departments SET TotalSales = ? WHERE DepartmentName = ?;", [saleTotal, res[0].DepartmentName], function (err, resultOne) {
                     if (err) console.log('error: ' + err);
                     return resultOne;
                 })
@@ -103,17 +101,17 @@ var purchase = function () {
                 console.log('Total: ' + saleTotal);
 
                 //this variable contains the newly updated stock quantity of the item purchased
-                newquantity = res[0].quantity - productPurchased[0].quantity;
+                newQuantity = res[0].StockQuantity - productPurchased[0].Quantity;
 
                 // connects to the mysql database Inventory and updates the stock quantity for the item puchased
-                conn.query("UPDATE Inventory SET quantity = " + newquantity + " WHERE id = " + productPurchased[0].id, function (err, res) {
+                connection.query("UPDATE Inventory SET StockQuantity = " + newQuantity + " WHERE id = " + productPurchased[0].id, function (err, res) {
                     // if(err) throw err;
                     // console.log('Problem ', err);
                     console.log('');
                     console.log(colors.cyan('Your order has been processed.  Thank you for shopping with us!'));
                     console.log('');
 
-                    conn.end();
+                    connection.end();
                 })
 
             };

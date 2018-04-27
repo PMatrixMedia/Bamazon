@@ -31,22 +31,22 @@ function queryDatabase(){
             if (err) throw err; 
             console.log('Dropped inventory table if existed.');
         })
-       conn.query('CREATE TABLE inventory (id serial PRIMARY KEY, name VARCHAR(50), price DECIMAL, quantity INTEGER);', 
+    conn.query('CREATE TABLE inventory (id serial PRIMARY KEY, name VARCHAR(50), price DECIMAL, quantity INTEGER, DepartmentName VARCHAR(40));', 
             function (err, results, fields) {
                 if (err) throw err;
             console.log('Created inventory table.');
         })
-       conn.query('INSERT INTO inventory (name, price, quantity) VALUES (?, ?, ?);', ['Geforce 1080', 500.00, 150], 
+    conn.query('INSERT INTO inventory (name, price, quantity, DepartmentName) VALUES (?, ?, ?, ?);', ['Geforce 1080', 500.00, 150, 'Game'], 
             function (err, results, fields) {
                 if (err) throw err;
             else console.log('Inserted ' + results.affectedRows + ' row(s).');
         })
-       conn.query('INSERT INTO inventory (name, price, quantity) VALUES (?, ?, ?);', ['God of War', 60.00, 154], 
+    conn.query('INSERT INTO inventory (name, price, quantity, DepartmentName) VALUES (?, ?, ?, ?);', ['God of War', 60.00, 154, 'Game'], 
             function (err, results, fields) {
                 if (err) throw err;
             console.log('Inserted ' + results.affectedRows + ' row(s).');
         })
-       conn.query('INSERT INTO inventory (name, price, quantity) VALUES (?, ?, ?);', ['PS4', 400.00, 100], 
+    conn.query('INSERT INTO inventory (name, price, quantity, DepartmentName) VALUES (?, ?, ?, ?);', ['PS4', 400.00, 100, 'Game'], 
         function (err, results, fields) {
                 if (err) throw err;
             console.log('Inserted ' + results.affectedRows + ' row(s).');
